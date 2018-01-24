@@ -9,8 +9,7 @@ class Main
 {
 	static void test(SupervisedLearner learner, String challenge)
 	{
-		// Load the training data
-		String fn = "/resources/data/" + challenge;
+        String fn = "C:\\Users\\rakib\\Documents\\GitHub\\ml-project\\target\\classes\\data\\" + challenge;
 		Matrix trainFeatures = new Matrix();
 		trainFeatures.loadARFF(fn + "_train_feat.arff");
 		Matrix trainLabels = new Matrix();

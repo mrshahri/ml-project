@@ -1,5 +1,7 @@
 package com.uark.ml;
 
+import java.util.Random;
+
 /**
  * Created by rakib on 1/22/2018.
  */
@@ -21,6 +23,7 @@ public class LayerLinear extends Layer {
         }
 
         // calculate activation=Mx+b
+        activation.fill(0);
         activation.add(Mx);
         activation.add(b);
     }
@@ -38,10 +41,12 @@ public class LayerLinear extends Layer {
 
         Matrix M1 = new Matrix(Y.cols(), X.cols());
         for (int i=0; i<X.rows(); ++i) {
-            Vec yi = Y.row(i);
+            Vec yi = new Vec(Y.cols());
+            yi.copy(Y.row(i));
             vectorSubtract(yi, yMean);
 
-            Vec xi = X.row(i);
+            Vec xi = new Vec(X.cols());
+            xi.copy(X.row(i));
             vectorSubtract(xi, xMean);
             Matrix tempM = outerProduct(yi, xi);
             matrixAddition(M1, tempM);
@@ -63,7 +68,10 @@ public class LayerLinear extends Layer {
         for (int i=0; i<M.rows(); ++i) {
             mDotxMean.set(i, M.row(i).dotProduct(xMean));
         }
-        copyValues(weights, mDotxMean, 0, mDotxMean.len);
+        Vec b = new Vec(yMean.size());
+        b.copy(yMean);
+        vectorSubtract(b, mDotxMean);
+        copyValues(weights, b, 0, mDotxMean.len);
         for (int i=0; i<M.rows(); ++i) {
             copyValues(weights, M.row(i), (i+1)*M.cols()-1, M.row(i).len);
         }
@@ -101,7 +109,7 @@ public class LayerLinear extends Layer {
         Vec temp = new Vec(b.len);
         temp.copy(b);
         temp.scale(-1);
-        a.add(b);
+        a.add(temp);
     }
 
     private static void test_activation_function() {
@@ -115,29 +123,50 @@ public class LayerLinear extends Layer {
 
     private static void test_ordinary_least_squares() throws OrdinaryLeastSquareException {
         System.out.println("\n\nTesting ordinary least squares");
-        Vec x = new Vec(new double[]{0, 1, 2});
-        Vec weights = new Vec(new double[] {1, 5, 1, 2, 3, 2, 1, 0});
+
+        Random random = new Random();
+
+        Matrix X = new Matrix(0, 2);
+        X.takeRow(new double[]{random.nextInt(10), random.nextInt(10)});
+        X.takeRow(new double[]{random.nextInt(10), random.nextInt(10)});
+        X.takeRow(new double[]{random.nextInt(10), random.nextInt(10)});
+
+        Matrix Y = new Matrix(0, 1);
+//        Y.takeRow(new double[]{2});
+//        Y.takeRow(new double[]{0});
+//        Y.takeRow(new double[]{1});
+
+        Matrix yNoise = new Matrix(0, 1);
+
+        Vec weights = new Vec(new double[]{random.nextInt(20), random.nextInt(20), random.nextInt(20)});
+        LayerLinear layerLinear = new LayerLinear(2, 1);
+        for (int i=0; i<X.rows(); ++i) {
+            Vec x = new Vec(X.cols());
+            x.copy(X.row(i));
+            layerLinear.activate(weights, x);
+            Vec y = new Vec(Y.cols());
+            y.copy(layerLinear.activation);
+            Y.takeRow(y.vals);
+
+            Vec noise = new Vec(Y.cols());
+            noise.copy(layerLinear.activation);
+            for (int j=0; j<noise.size(); ++j) {
+                noise.set(j, noise.get(j)+random.nextInt(2));
+            }
+            yNoise.takeRow(noise.vals);
+        }
+
         Vec originalWeights = new Vec(weights.len);
         originalWeights.copy(weights);
         System.out.println("Old weights: " + originalWeights.toString());
-        LayerLinear layerLinear = new LayerLinear(3, 2);
-        layerLinear.activate(weights, x);
-        Vec y = layerLinear.activation;
-        Vec yNoise = new Vec(y.len);
-        yNoise.copy(y);
-        for (int i=0; i<yNoise.len; ++i) {
-            yNoise.set(i, yNoise.get(i)+1);
-        }
+
         weights.fill(0);
-        Matrix X = new Matrix(0, x.len);
-        X.takeRow(x.vals);
-        Matrix Y = new Matrix(0, yNoise.len);
-        Y.takeRow(yNoise.vals);
-        layerLinear.ordinary_least_squares( X, Y, weights);
+
+        layerLinear.ordinary_least_squares( X, yNoise, weights);
         System.out.println("New weights: " + weights.toString());
         double squaredDist = weights.squaredDistance(originalWeights);
         System.out.println("Squared Distance = " + squaredDist);
-        if (squaredDist > 10.0) {
+        if (squaredDist > 20.0) {
             throw new OrdinaryLeastSquareException("Too much distance between original weights and calculated weights");
         }
     }

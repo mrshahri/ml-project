@@ -7,16 +7,9 @@ package com.uark.ml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.lang.StringBuilder;
-import java.util.Comparator;
-import java.util.Random;
+import java.io.PrintWriter;
+import java.util.*;
 
 
 /// This stores a matrix, A.K.A. data set, A.K.A. table. Each element is

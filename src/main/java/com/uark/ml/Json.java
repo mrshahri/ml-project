@@ -5,12 +5,11 @@ package com.uark.ml;
 // See http://creativecommons.org/publicdomain/zero/1.0/
 // ----------------------------------------------------------------
 
-import java.util.ArrayList;
-import java.lang.StringBuilder;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 // Represents a node in a JSON DOM. Here is an example usage of this class:
 //

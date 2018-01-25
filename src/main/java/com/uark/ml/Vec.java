@@ -5,9 +5,6 @@ package com.uark.ml;
 // See http://creativecommons.org/publicdomain/zero/1.0/
 // ----------------------------------------------------------------
 
-import java.util.Iterator;
-import java.lang.StringBuilder;
-
 /// Represents a vector of doubles
 public class Vec
 {

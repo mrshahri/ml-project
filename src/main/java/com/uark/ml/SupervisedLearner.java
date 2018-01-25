@@ -70,7 +70,7 @@ abstract class SupervisedLearner {
         for (int i=0; i<features.rows()/2; ++i) {
             int index1 = random.nextInt(features.rows());
             int index2 = random.nextInt(features.rows());
-            if (index1 != index1) {
+            if (index1 != index2) {
                 features.swapRows(index1, index2);
                 labels.swapRows(index1, index2);
             }

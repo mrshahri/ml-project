@@ -112,18 +112,15 @@ public class LayerLinear extends Layer {
         a.add(temp);
     }
 
-    private static void test_activation_function() {
-        System.out.println("Testing activation function");
+    static void test_activation_function() {
         Vec x = new Vec(new double[]{0, 1, 2});
         Vec weights = new Vec(new double[]{1, 5, 1, 2, 3, 2, 1, 0});
         LayerLinear layerLinear = new LayerLinear(3, 2);
         layerLinear.activate(weights, x);
-        System.out.println("Activation = " + layerLinear.activation.toString());
+        System.out.println("Activation = [" + layerLinear.activation.toString() + " ]");
     }
 
-    private static void test_ordinary_least_squares() throws OrdinaryLeastSquareException {
-        System.out.println("\n\nTesting ordinary least squares");
-
+    static void test_ordinary_least_squares() throws OrdinaryLeastSquareException {
         Random random = new Random();
 
         Matrix X = new Matrix(0, 2);
@@ -132,10 +129,6 @@ public class LayerLinear extends Layer {
         X.takeRow(new double[]{random.nextInt(10), random.nextInt(10)});
 
         Matrix Y = new Matrix(0, 1);
-//        Y.takeRow(new double[]{2});
-//        Y.takeRow(new double[]{0});
-//        Y.takeRow(new double[]{1});
-
         Matrix yNoise = new Matrix(0, 1);
 
         Vec weights = new Vec(new double[]{random.nextInt(20), random.nextInt(20), random.nextInt(20)});
@@ -166,14 +159,9 @@ public class LayerLinear extends Layer {
         System.out.println("New weights: " + weights.toString());
         double squaredDist = weights.squaredDistance(originalWeights);
         System.out.println("Squared Distance = " + squaredDist);
-        if (squaredDist > 20.0) {
-            throw new OrdinaryLeastSquareException("Too much distance between original weights and calculated weights");
+        if (squaredDist > 10.0) {
+            throw new OrdinaryLeastSquareException("Too much distance (Squared Distance=" + squaredDist
+                    + ") between original weights and calculated weights.");
         }
-    }
-
-    // Test code
-    public static void main(String[] args) throws OrdinaryLeastSquareException {
-        LayerLinear.test_activation_function();
-        LayerLinear.test_ordinary_least_squares();
     }
 }

@@ -39,18 +39,28 @@ class Main
         learner.crossValidation(trainFeatures, trainLabels, 5, 10);
     }
 
-	public static void testLearner(SupervisedLearner learner)
-	{
-//		test(learner, "hep");
-//		test(learner, "vow");
-//		test(learner, "soy");
+	private static void testLearner(SupervisedLearner learner) {
+        System.out.println("\n###Testing Neural Net Classifier###");
         test(learner);
 	}
 
-	public static void main(String[] args)
-	{
-//		testLearner(new BaselineLearner());
-		testLearner(new NeuralNet());
-		//testLearner(new RandomForest(50));
+    private static void testActivationFunction() {
+        System.out.println("\n###Testing Activation Function###");
+        LayerLinear.test_activation_function();
+    }
+
+    private static void testOrdinaryLeastSquares() {
+        System.out.println("\n###Testing Ordinary Least Squares###");
+        try {
+            LayerLinear.test_ordinary_least_squares();
+        } catch (OrdinaryLeastSquareException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+	public static void main(String[] args) {
+        testActivationFunction();
+        testOrdinaryLeastSquares();
+        testLearner(new NeuralNet());
 	}
 }

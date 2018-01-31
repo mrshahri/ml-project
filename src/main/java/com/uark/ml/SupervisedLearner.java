@@ -5,7 +5,10 @@ package com.uark.ml;
 // See http://creativecommons.org/publicdomain/zero/1.0/
 // ----------------------------------------------------------------
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 abstract class SupervisedLearner {
     /// Return the name of this learner
@@ -51,6 +54,7 @@ abstract class SupervisedLearner {
 
     void crossValidation(Matrix features, Matrix labels, int mRepetitions, int nFold) {
 
+        // m-repetitions
         for (int count=1; count<=mRepetitions; ++count) {
             Random random = new Random();
 
@@ -77,22 +81,26 @@ abstract class SupervisedLearner {
             }
 
             // n-fold construction
+            List<Integer> randomFeatureIndexes = getUniqueListOfRandomNumbers(features.rows());
             for (int foldNo = 0; foldNo<nFold; ++foldNo) {
                 for (int i=0; i<rowsInFold; ++i) {
                     if (foldNo*rowsInFold+i < features.rows()) {
-                        featureFolds.get(foldNo).takeRow(features.row(foldNo*rowsInFold+i).vals);
-                        labelFolds.get(foldNo).takeRow(labels.row(foldNo*rowsInFold+i).vals);
+                        int randomFeatureIndex = randomFeatureIndexes.get(foldNo*rowsInFold+i);
+                        featureFolds.get(foldNo).takeRow(features.row(randomFeatureIndex).vals);
+                        labelFolds.get(foldNo).takeRow(labels.row(randomFeatureIndex).vals);
                     } else {
                         break;
                     }
                 }
             }
 
-            // m-repetitions
             double SSE = 0.0;
+            // randomize fold index
+            List<Integer> randomFoldIndexes = getUniqueListOfRandomNumbers(nFold);
             for (int i=0; i<nFold; ++i) {
-                Matrix testFeaturesBlock = featureFolds.get(i);
-                Matrix testLabelsBlock = labelFolds.get(i);
+                Integer testFeatureIndex = randomFoldIndexes.get(i);
+                Matrix testFeaturesBlock = featureFolds.get(testFeatureIndex);
+                Matrix testLabelsBlock = labelFolds.get(testFeatureIndex);
                 Matrix trainFeaturesBlock = new Matrix(0, features.cols());
                 Matrix trainLabelsBlock = new Matrix(0, labels.cols());
                 for (int j=0; j<nFold; ++j) {
@@ -109,5 +117,14 @@ abstract class SupervisedLearner {
             double RMSE = Math.sqrt(SSE/10);
             System.out.println("Repetition:" + count + " RMSE = " + RMSE);
         }
+    }
+
+    private List<Integer> getUniqueListOfRandomNumbers(int limit) {
+        List<Integer> randomList = new ArrayList<Integer>();
+        for (int i=0; i<limit; ++i) {
+            randomList.add(i);
+        }
+        Collections.shuffle(randomList);
+        return randomList;
     }
 }
